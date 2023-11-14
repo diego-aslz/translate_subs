@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+# Ruby script to extract and translate subtitles from MKV files from English to Portuguese (but you can customize this)
+#
+# Dependencies:
+#
+#   1. `gem install srt`
+#   2. `brew install translate-shell mkvtoolnix`
+#
+# Usage:
+#
+#   generate_subs [FILE]
+#
+# Notice: it assumes the subtitles are on track index 3, which may change from file to file.
+# Tracks can be checked using `mkvinfo file.mkv`
+
+require 'shellwords'
+require 'pathname'
+require 'srt'
+
+ARGV.each do |file|
+  path = Pathname(file)
+
+  en_srt = "#{path.basename('.*')}.en.srt"
+  pt_srt = "#{path.basename('.*')}.srt"
+
+  `mkvextract tracks #{file} 2:#{Shellwords.escape(en_srt)}`
+
+  # Join split lines for better translation
+  srt = SRT::File.parse(File.new(en_srt))
+  total = srt.lines.size
+  srt.lines.each_with_index do |l, idx|
+    l.text = [`trans -no-warn -no-autocorrect -brief en:pt-BR #{Shellwords.escape(l.text.join(' '))}`.to_s.strip]
+    printf("\r#{file} - %0.1f%%", (idx + 1) * 100.0 / total)
+  end
+  puts("\r#{file} - %0.1f%%", 100.0)
+  IO.write(pt_srt, srt.to_s)
+
+  `rm #{Shellwords.escape(en_srt)}`
+end
