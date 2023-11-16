@@ -84,7 +84,7 @@ end
 # Set SRT format
 def set_srt_formatting(dialogue)
   style = @styles.detect {|style| style[:name] == dialogue[:style] }
-  new_line = "#{@subtitle_counter}\n#{dialogue[:show_time]} --> #{dialogue[:hide_time]}\n<font color=\"\##{style&.dig(:font_color)}\">#{dialogue[:dialogue]}<\/font>\n\n"
+  new_line = "#{@subtitle_counter}\n#{dialogue[:show_time]} --> #{dialogue[:hide_time]}\n<font color=\"\##{style&.dig(:font_color) || 'FFFFFF'}\">#{dialogue[:dialogue]}<\/font>\n\n"
   @subtitle_counter += 1
 
   return new_line
