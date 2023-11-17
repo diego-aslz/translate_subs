@@ -62,7 +62,7 @@ ARGV.each do |file|
   srt = SRT::File.parse(File.new(en_srt))
   total = srt.lines.size
   srt.lines.each_with_index do |l, idx|
-    l.text = [`trans -no-warn -no-autocorrect -brief en:pt-BR #{Shellwords.escape(l.text.join(' '))}`.to_s.strip]
+    l.text = [`trans -no-warn -no-autocorrect -brief en:pt-BR #{Shellwords.escape(l.text.join(' '))}`.to_s.strip] if l.text.join(' ').size > 2
     printf("\r#{file} - %0.1f%%", (idx + 1) * 100.0 / total)
   end
   printf("\r#{file} - %0.1f%%", 100.0)

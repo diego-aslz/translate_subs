@@ -45,7 +45,7 @@ end
 def replace_braces(line)
 
 
-  line = line.gsub(/\{[\w\W]+\}/,"")
+  line = line.gsub(/\{[^}]+\}/,"")
   # line = line.gsub("}", "; ")
   line = line.gsub(/(\\N)+/) { "\n" }
   return line
@@ -125,7 +125,7 @@ def asstosrt(arg)
     line = get_styles(line)
     line = replace_braces(line)
     dialogue = parse_dialogue(line)
-    if dialogue.length > 0
+    if dialogue.length > 0 && dialogue[:dialogue] !~ /\Am\s-?\d.*\d\z/
       dialogues.push(dialogue)
     end
   end
