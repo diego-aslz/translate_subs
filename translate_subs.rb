@@ -25,22 +25,21 @@ ARGV.each do |file|
   path = Pathname(file)
 
   tracks = []
-  track = nil
+  track = false
   `mkvinfo #{Shellwords.escape(file)}`.split("\n").each do |line|
     if line =~ /\+\sTrack\z/
-      tracks << track if track
-      track = {}
+      tracks << {}
+      track = true
       next
     end
 
     if track && line =~ /\A|\s\s/
       match = line.match(/\+\s([^:]*):(.*)\z/)
-      track[match[1].strip] = match[2].strip if match
+      tracks.last[match[1].strip] = match[2].strip if match
       next
     end
 
-    tracks << track if track
-    track = nil
+    track = false
   end
 
   i = tracks.find_index { |t| t['Track type'] == 'subtitles' }
